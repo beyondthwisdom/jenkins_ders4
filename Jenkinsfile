@@ -16,10 +16,13 @@ pipeline {
 
 
     stages {
-        stage('Build and Push Production Image') {
+        stage('Build and Push Production Test Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "echo  $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    sh '''
+                      echo  $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                      ./mvnw package jib:build -DskipTests -Djib.to.image=${params.VERSION}
+                    '''
                 }
             }
         }
