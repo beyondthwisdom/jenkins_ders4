@@ -1,6 +1,3 @@
-// Global script variable
-def script
-
 pipeline {
     agent any
     tools {
@@ -18,12 +15,14 @@ pipeline {
     stages {
         stage('Build and Push Production Test Image') {
             steps {
+              script {  
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh '''
                       echo  $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                      ./mvnw package jib:build -DskipTests -Djib.to.image=btwdevops/jenkinsders4test:1.0.0
-                    '''
                 }
+                def script = load 'script.groovy'
+                script.testBuildAndPushImage("", params.TEST_DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
+
+              }
             }
         }
     }
