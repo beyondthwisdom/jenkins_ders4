@@ -10,6 +10,17 @@
     <name>Jenkins Ders 4</name>
     <description>Description for Jenkins Ders 4</description>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>jenkinsders4</id>
+            <url>btwdevops</url>
+        </snapshotRepository>
+        <repository>
+            <id>1.0.0</id>
+            <url>1.0.0</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <!--
             Build properties
