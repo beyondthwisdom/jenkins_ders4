@@ -27,6 +27,17 @@ pipeline {
             }
         }
 
+        stage('Manual Approval for Production') {
+            when {
+                expression {
+                    return params.DEPLOY_TO_PROD
+                }
+            }
+            steps {
+                input message: 'Bu deploymentı prod ortamına yapmak istediğinizden emin misiniz?', ok: 'Deploy'
+            }
+        }        
+
         stage('Build and Push Production Prod Image') {
             steps {
               script {  
