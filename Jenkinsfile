@@ -1,3 +1,6 @@
+// Global script variable
+def script
+
 pipeline {
     agent any
     tools {
@@ -10,8 +13,7 @@ pipeline {
         booleanParam(name: 'DEPLOY_TO_PROD', defaultValue: false, description: 'Deploy to production?')
     }
 
-    // Global script variable
-    def script
+
 
     stages {
         stage('Init') {
