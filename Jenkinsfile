@@ -27,7 +27,7 @@ pipeline {
                 echo 'Deploying...'
                 sh '''
                 # Use the credentials securely
-                echo "Deploying using ${env.MY_SECRET} user"
+                echo "Deploying using ${MY_SECRET} user"
                 # Insert deployment commands here
                 # For example, using credentials to authenticate against a server
                 '''
