@@ -4,35 +4,29 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo "Checking out ${env.BRANCH_NAME} branch"
+                echo 'Checking out code...'
                 // Checkout commands go here
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building on ${env.NODE_NAME} in workspace ${env.WORKSPACE}"
+                echo 'Building...'
                 // Build commands go here
-            }
-        }
-
-        stage('Test') {
-            steps {
-                script {
-                    if (env.BUILD_NUMBER.toInteger() % 2 == 0) {
-                        echo "Running tests on even build number ${env.BUILD_NUMBER}"
-                        // Commands to run tests
-                    } else {
-                        echo "Skipping tests on odd build number ${env.BUILD_NUMBER}"
-                    }
-                }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "Deploying to ${env.JENKINS_URL}"
-                // Deployment commands go here
+                withCredentials([usernamePassword(credentialsId: 'github-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    echo 'Deploying with secured credentials...'
+                    sh '''
+                    echo "Deploying as $USERNAME"
+                    # Use $USERNAME and $PASSWORD in your deploy commands
+                    # For example, to log in to a server:
+                    # sshpass -p $PASSWORD ssh $USERNAME@yourserver.com "deploy-command"
+                    '''
+                }
             }
         }
     }
