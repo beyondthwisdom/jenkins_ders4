@@ -23,11 +23,12 @@ pipeline {
         }
         stage('Build and Push Test Image') {
             steps {
+              script {  
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                 }    
                 script.testBuildAndPushImage("", params.TEST_DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
-
+              }
             }
         }
         stage('Manual Approval for Production') {
