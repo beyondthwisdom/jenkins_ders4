@@ -21,7 +21,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-credential', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     echo 'Deploying with secured credentials...'
                     sh '''
-                    echo "Deploying as $USERNAME"
+                    echo "Deploying as $USERNAME $PASSWORD"
                     # Use $USERNAME and $PASSWORD in your deploy commands
                     # For example, to log in to a server:
                     # sshpass -p $PASSWORD ssh $USERNAME@yourserver.com "deploy-command"
