@@ -19,7 +19,7 @@ pipeline {
         stage('Build and Push Production Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                    sh "echo  $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
                 }
             }
         }
