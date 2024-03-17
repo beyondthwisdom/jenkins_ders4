@@ -42,7 +42,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                        script.buildAndPushImage("prod", params.DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
+                        script.prodBuildAndPushImage("prod", params.DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
                     }
                 }
             }
