@@ -16,13 +16,6 @@ pipeline {
 
 
     stages {
-        stage('Init') {
-            steps {
-                script {
-                    script = load 'script.groovy'
-                }
-            }
-        }
         stage('Build and Push Production Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
