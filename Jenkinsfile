@@ -24,10 +24,11 @@ pipeline {
 
         stage('Deploy') {
             steps {
+                def (username, password) = env.MY_SECRET.split(':', 2)
                 echo 'Deploying...'
                 sh '''
                 # Use the credentials securely
-                echo "Deploying using ${MY_SECRET} user"
+                echo "Deploying using ${username} user"
                 # Insert deployment commands here
                 # For example, using credentials to authenticate against a server
                 '''
