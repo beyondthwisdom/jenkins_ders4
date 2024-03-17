@@ -17,10 +17,11 @@ pipeline {
             steps {
               script {  
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                      echo  $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    echo  $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    def script = load 'script.groovy'
+                    script.testBuildAndPushImage("", params.TEST_DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())    
                 }
-                def script = load 'script.groovy'
-                script.testBuildAndPushImage("", params.TEST_DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
+
 
               }
             }
