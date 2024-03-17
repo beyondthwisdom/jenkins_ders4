@@ -27,7 +27,7 @@ pipeline {
                 
                 echo 'Deploying...'
                 sh '''
-                def (username, password) = MY_SECRET.split(':', 2)
+                def (username, password) = env.MY_SECRET.split(':', 2)
                 # Use the credentials securely
                 echo "Deploying using ${username} user"
                 # Insert deployment commands here
