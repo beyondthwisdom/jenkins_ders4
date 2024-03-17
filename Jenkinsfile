@@ -24,7 +24,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                def (username, password) = env.MY_SECRET.split(':', 2)
+                def (username, password) = MY_SECRET.split(':', 2)
                 echo 'Deploying...'
                 sh '''
                 # Use the credentials securely
