@@ -28,17 +28,20 @@ pipeline {
         }
 
         stage('Manual Approval for Production') {
-            when {
-                expression {
-                    return params.DEPLOY_TO_PROD
+            steps {
+                script {
+                    def userInput = input(id: 'userInput', message: 'Set production version and approve deployment', parameters: [string(defaultValue: '1.0.0', description: 'Enter the version number for production deployment', name: 'PROD_VERSION')])
+                    env.PROD_VERSION = userInput
                 }
             }
-            steps {
-                input message: 'Bu deploymentı prod ortamına yapmak istediğinizden emin misiniz?', ok: 'Deploy'
-            }
-        }        
+        }       
 
         stage('Build and Push Production Prod Image') {
+            when {
+                expression {
+                    return env.PROD_VERSION != ''
+                }
+            }
             steps {
               script {  
                 withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
