@@ -1,61 +1,41 @@
-#!/usr/bin/env groovy
-
-node {
-    stage('checkout') {
-        checkout scm
+pipeline {
+    agent any
+    tools {
+        maven 'maven 3.9.6'
     }
+    parameters {
+        string(name: 'DOCKERHUB_REPO', defaultValue: 'btwdevops/jenkinsders4', description: 'Docker Hub repository for production')
+        string(name: 'TEST_DOCKERHUB_REPO', defaultValue: 'btwdevops/jenkinsders4test', description: 'Docker Hub repository for test')
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Version of the project')
+        choice(name: 'MAJOR_VERSION', choices: ['1', '2', '3'], description: 'Major version number')
+    }
+    stages {
 
-    docker.image('jhipster/jhipster:v8.1.0').inside('-u jhipster -e MAVEN_OPTS="-Duser.home=./"') {
-        stage('check java') {
-            sh "java -version"
-        }
-
-        stage('clean') {
-            sh "chmod +x mvnw"
-            sh "./mvnw -ntp clean -P-webapp"
-        }
-        stage('nohttp') {
-            sh "./mvnw -ntp checkstyle:check"
-        }
-
-        stage('install tools') {
-            sh "./mvnw -ntp com.github.eirslett:frontend-maven-plugin:install-node-and-npm@install-node-and-npm"
-        }
-
-        stage('npm install') {
-            sh "./mvnw -ntp com.github.eirslett:frontend-maven-plugin:npm"
-        }
-        stage('backend tests') {
-            try {
-                sh "./mvnw -ntp verify -P-webapp"
-            } catch(err) {
-                throw err
-            } finally {
-                junit '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
+        stage('Build and Push Test Image') {
+            steps {
+                script {
+                    def script = load 'script.groovy'
+                    script.buildAndPushImage("", params.TEST_DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
+                }
             }
         }
-
-        stage('frontend tests') {
-            try {
-               sh "npm install"
-               sh "npm test"
-            } catch(err) {
-                throw err
-            } finally {
-                junit '**/target/test-results/TESTS-results-jest.xml'
+        stage('Manual Approval') {
+            steps {
+                input message: 'Approve deployment to production?', ok: 'Deploy'
             }
         }
-
-        stage('packaging') {
-            sh "./mvnw -ntp verify -P-webapp deploy -Pprod -DskipTests"
-            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+        stage('Build and Push Production Image') {
+            when {
+                expression {
+                    return params.MAJOR_VERSION == '1' // Örneğin, sadece MAJOR_VERSION 1 olduğunda prod'a deploy et
+                }
+            }
+            steps {
+                script {
+                    def script = load 'script.groovy'
+                    script.buildAndPushImage("prod", params.DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
+                }
+            }
         }
-    }
-
-    def dockerImage
-    stage('publish docker') {
-        // A pre-requisite to this step is to setup authentication to the docker registry
-        // https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin#authentication-methods
-        sh "./mvnw -ntp -Pprod verify jib:build"
     }
 }
